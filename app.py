@@ -29,7 +29,11 @@ def default_data():
 def train(d):
     cols=["Pclass","Sex","Age","SibSp","Parch","Fare","Embarked"]
     num=["Pclass","Age","SibSp","Parch","Fare"]; cat=["Sex","Embarked"]
-    X=d[cols].copy(); y=d.Survived.astype(int)
+   
+    X = d[cols].copy()
+    X[cat] = X[cat].astype(object)
+    X[cat] = X[cat].where(X[cat].notna(), np.nan)
+    y = d.Survived.astype(int)
     prep=ColumnTransformer([
       ("num",Pipeline([("impute",SimpleImputer(strategy="median")),("scale",StandardScaler())]),num),
       ("cat",Pipeline([("impute",SimpleImputer(strategy="most_frequent")),("onehot",OneHotEncoder(handle_unknown="ignore"))]),cat)
